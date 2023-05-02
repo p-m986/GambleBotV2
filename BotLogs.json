@@ -1,0 +1,38 @@
+{
+	"errors": [
+		{
+			"id": 1,
+			"timestamp": "2023-04-20 16:58:35",
+			"message": "WOw the error did work"
+		},
+		{
+			"id": 2,
+			"timestamp": "2023-04-30 17:53:36",
+			"class_name": "__main__",
+			"function_name": "__main__",
+			"message": "This is a test error"
+		},
+		{
+			"id": 3,
+			"timestamp": "2023-04-30 17:53:59",
+			"class_name": "__main__",
+			"function_name": "__main__",
+			"message": "This is a test error"
+		},
+		{
+			"id": 4,
+			"timestamp": "2023-04-30 18:27:06",
+			"class_name": "database",
+			"function_name": "__test_connection",
+			"message": "This is a test error"
+		},
+		{
+			"id": 5,
+			"timestamp": "2023-04-30 18:31:12",
+			"class_name": "__main__",
+			"function_name": "__main__",
+			"message": "This is a test error"
+		}
+	],
+	"restarts": [{ "id": 1 }]
+}
