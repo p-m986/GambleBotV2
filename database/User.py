@@ -1,13 +1,14 @@
-from Logs import logevents
 import asyncio
 import json
 from Connection import client
+
 from config import __add_path
+asyncio.run(__add_path())
 
-asyncio.run(__add_path)
-
+from Logs import logevents
 
 # Methods that belong to this class
+# __find_username               Working
 # __get_user_count              Done        ErrHandling: Done
 # __create_user                 Done        ErrHandling: Not Required
 # __add_user                    Done        ErrHandling: Done
@@ -24,15 +25,15 @@ asyncio.run(__add_path)
 # Data to be fed into this class is to be validated before hand
 # as no error handeling has been done for invalid data
 class User():
+    # Setting up the collection to be used Client is common for all objects 
+    database = 'UserData'
+    collection = 'User'
+    client = client[database][collection]
+    
+    # Setting up the logger class for logging errors
+    logger = logevents()
+
     def __init__(self):
-        # Setting up the logger class for logging errors
-        self.logger = logevents()
-
-        # Setting up the collection to be used
-        self.database = 'UserData'
-        self.collection = 'User'
-        self.client = client[self.database][self.collection]
-
         # Creating a default user object
         self.userid = None
         self.discord_username = None
@@ -43,14 +44,26 @@ class User():
         self.verified = False
         self.banned = False
 
+
     # Method to get the total count of successfully registerd users
-    async def __get_user_count(self):
+    async def __find_username(self, username: str) -> dict:
         try:
-            return int(self.client.count_documents({}))
+            return self.client.find_one({"game_usernames":username})
         except Exception as error:
-            errorid = await self.logger.log_error(class_name='User', function_name='__get_user_count', message=error)
+            errorid = await self.logger.log_error(class_name='User', function_name='__find_username', message=str(error))
+            print(
+                f"An error occoured in the User class within the __find_username function, check error logs with id {errorid} for more details")
+            return False
+        
+    # Method to get the total count of successfully registerd users
+    async def __get_user_count(self) -> bool:
+        try:
+            return ("Number of Toatl Users:\t" + str(self.client.count_documents({})))
+        except Exception as error:
+            errorid = await self.logger.log_error(class_name='User', function_name='__get_user_count', message=str(error))
             print(
                 f"An error occoured in the User class within the __get_user_count function, check error logs with id {errorid} for more details")
+            return False
 
 
 # Create User
@@ -90,7 +103,7 @@ class User():
             return
         except Exception as error:
 
-            errorid = await self.logger.log_error(class_name='User', function_name='__add_user', message=error)
+            errorid = await self.logger.log_error(class_name='User', function_name='__add_user', message=str(error))
             print(
                 f"An error occoured in the User class within the __add_user function, check error logs with id {errorid} for more details")
 
@@ -113,7 +126,7 @@ class User():
 
         except Exception as error:
             errorid = self.logger.log_error(
-                class_name='User', function_name='__update_user', message=error)
+                class_name='User', function_name='__update_user', message=str(error))
             print(
                 f'An error occoured in the User class within the __update_user function, check error logs with id {errorid} for more details')
             return False
@@ -128,7 +141,7 @@ class User():
         
         except Exception as error:
             errorid = self.logger.log_error(
-                class_name='User', function_name='__delete_user', message=error)
+                class_name='User', function_name='__delete_user', message=str(error))
             print(
                 f'An error occoured in the User class within the __delete_user function, check error logs with id {errorid} for more details')
             return False
@@ -149,7 +162,7 @@ class User():
             return True
         
         except Exception as error:
-            errorid = self.logger.log_error(class_name='User', function_name='__add_alt', message=error)
+            errorid = self.logger.log_error(class_name='User', function_name='__add_alt', message=str(error))
             print(f'An error occoured in the Uer class wtihin the __add_alt function, check error logs with id {errorid} for more details')
             return False
 
@@ -169,7 +182,7 @@ class User():
             return True
         
         except Exception as error:
-            errorid = self.logger.log_error(class_name='User', function_name='__change_default', message=error)
+            errorid = self.logger.log_error(class_name='User', function_name='__change_default', message=str(error))
             print(f'An error occoured in the Uer class wtihin the __change_default function, check error logs with id {errorid} for more details')
             return False
 
@@ -189,7 +202,7 @@ class User():
             return True
 
         except Exception as error:
-            errorid = self.logger.log_error(class_name='User', function_name='__verify_user', message=error)
+            errorid = self.logger.log_error(class_name='User', function_name='__verify_user', message=str(error))
             print(f'An error occoured in the Uer class wtihin the __verify_user function, check error logs with id {errorid} for more details')
             return False
         
@@ -209,7 +222,7 @@ class User():
             return True
 
         except Exception as error:
-            errorid = self.logger.log_error(class_name='User', function_name='__remove_verification', message=error)
+            errorid = self.logger.log_error(class_name='User', function_name='__remove_verification', message=str(error))
             print(f'An error occoured in the Uer class wtihin the __remove_verification function, check error logs with id {errorid} for more details')
             return False
 
@@ -229,7 +242,7 @@ class User():
             return True
 
         except Exception as error:
-            errorid = self.logger.log_error(class_name='User', function_name='__ban_user', message=error)
+            errorid = self.logger.log_error(class_name='User', function_name='__ban_user', message=str(error))
             print(f'An error occoured in the Uer class wtihin the __ban_user function, check error logs with id {errorid} for more details')
             return False
 
@@ -249,14 +262,12 @@ class User():
             return True
 
         except Exception as error:
-            errorid = self.logger.log_error(class_name='User', function_name='__unban_user', message=error)
+            errorid = self.logger.log_error(class_name='User', function_name='__unban_user', message=str(error))
             print(f'An error occoured in the Uer class wtihin the __unban_user function, check error logs with id {errorid} for more details')
             return False
 
         
 
-
-
 if __name__ == '__main__':
     obj = User()
-    asyncio.run(obj._User__get_user_count())
+    print(asyncio.run(obj._User__get_user_count()))

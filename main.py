@@ -38,13 +38,14 @@ async def reload(ctx: commands.Context, cog:str):
             await ctx.reply(f"{cog} has been reloaded successfully",ephemeral=True)
         except Exception as e:
             obj = logevents()
-            await obj.log_error(class_name="Main", function_name="ReloadCommand", message=e)
+            await obj.log_error(class_name="Main", function_name="ReloadCommand", message=str(e))
             print(f"{cog} could not be loaded:")
             raise e
                 
 async def loadcog():
     for cog in os.listdir("./cogs"):
         if cog.endswith(".py"):
+            print(cog)
             try:
                 cog = f"cogs.{cog.replace('.py', '')}"
                 await bot.load_extension(cog)
@@ -57,11 +58,11 @@ try:
     asyncio.run(loadcog())
 except Exception as e:
     obj = logevents()
-    asyncio.run(obj.log_error(class_name="Main", function_name="loadcog", message=e))
+    asyncio.run(obj.log_error(class_name="Main", function_name="loadcog", message=str(e)))
 
 
 try:
     bot.run(os.getenv('TOKEN'))
 except Exception as e:
     obj = logevents()
-    asyncio.run(obj.log_error(class_name="Main", function_name="loadcog", message=e))
+    asyncio.run(obj.log_error(class_name="Main", function_name="loadcog", message=str(e)))

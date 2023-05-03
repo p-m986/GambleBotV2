@@ -4,8 +4,9 @@ import os
 import sys
 from datetime import datetime
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+absolute_path = os.path.dirname(os.path.abspath(__file__))
+file_path = absolute_path + '/BotLogs.json'
 
 class logevents():
     def __init__(self):
@@ -19,7 +20,7 @@ class logevents():
 
     # Its not working rn it can still make duplicate ids will fix it later        
     async def fetch_ids(self):
-        with open("BotLogs.json", 'r') as f:
+        with open(file_path, 'r') as f:
             data = json.load(f)
         self.errorid = data['errors'][-1]['id'] + 1
         self.restartid = data['restarts'][-1]['id'] + 1
@@ -35,7 +36,7 @@ class logevents():
         timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 
         # Load the data from the file
-        with open('BotLogs.json', 'r') as f:
+        with open(file_path, 'r') as f:
             data = json.load(f)
         
         # Edit the specific errors
@@ -49,7 +50,7 @@ class logevents():
         data['errors'].append(self.errors)
 
         # Rewrite the whole file with the updated data
-        with open('BotLogs.json', 'w') as f:
+        with open(file_path, 'w') as f:
             json.dump(data, f)
 
         return self.errorid
@@ -64,7 +65,7 @@ class logevents():
         timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 
         # Load the data from the log file
-        with open("BotLogs.json", "r") as f:
+        with open(file_path, "r") as f:
             data = json.load(f)
         
         # Add the restart log
@@ -73,7 +74,7 @@ class logevents():
         data['restarts'].append(self.restarts)
 
         # Write the new data to the file
-        with open("BotLogs.json", 'w') as f:
+        with open(file_path, 'w') as f:
             json.dump(data, f)
         
         return self.restartid
