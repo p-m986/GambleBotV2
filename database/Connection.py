@@ -2,12 +2,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os
 from dotenv import load_dotenv
-from config import __add_path
-import asyncio
-
-asyncio.run(__add_path())
 load_dotenv()
-
 from Logs import logevents
 
 class database():
@@ -15,6 +10,11 @@ class database():
         self.uri = f"mongodb+srv://{os.getenv('USER')}:{os.getenv('PASSWORD')}@data.rg5fs5b.mongodb.net/?retryWrites=true&w=majority"
         self.has_connected = False
         self.client = None
+    
+    async def get_client(self):
+        if not self.client:
+            self.client = await self.__connect()
+        return self.client
     
     async def __connect(self):
         client = MongoClient(self.uri, server_api = ServerApi('1'))
@@ -32,6 +32,3 @@ class database():
             await obj.log_error(class_name='database', function_name='__test_connection', message=error)
             print(f"An error occoured in the database class within the __test_connection function, check error logs with id {obj.errorid}")
         return
-    
-obj = database()
-client = asyncio.run(obj._database__connect())

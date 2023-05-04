@@ -34,31 +34,32 @@ async def reload(ctx: commands.Context, cog:str):
     if ctx.author.id in [782252708685414470]:
         try:
             await bot.unload_extension(f"cogs.{cog}")
-            await bot.load_extension(f"cogs.{cog}")
+            await bot.load_extension(f"cogs.{cog}", package='BOTAPRILUPDATE.database')
             await ctx.reply(f"{cog} has been reloaded successfully",ephemeral=True)
         except Exception as e:
             obj = logevents()
-            await obj.log_error(class_name="Main", function_name="ReloadCommand", message=str(e))
-            print(f"{cog} could not be loaded:")
+            errorid = await obj.log_error(class_name="Main", function_name="ReloadCommand", message=str(e))
+            print(f'An error occoured in the Uer class wtihin the {cog} cog, check error logs with id {errorid} for more details')
             raise e
                 
 async def loadcog():
     for cog in os.listdir("./cogs"):
         if cog.endswith(".py"):
-            print(cog)
             try:
                 cog = f"cogs.{cog.replace('.py', '')}"
-                await bot.load_extension(cog)
+                await bot.load_extension(cog, package='BOTAPRILUPDATE')
+                print("Loaded:\t", cog)
             except Exception as e:
-                print(f"{cog} could not be loaded:")
+                obj = logevents()
+                errorid = await obj.log_error(class_name="Main", function_name="loadcog", message=str(e))
+                print(f'An error occoured in the Uer class wtihin the {cog} cog, check error logs with id {errorid} for more details')
                 raise e
 
 
 try:
     asyncio.run(loadcog())
 except Exception as e:
-    obj = logevents()
-    asyncio.run(obj.log_error(class_name="Main", function_name="loadcog", message=str(e)))
+    print(e)
 
 
 try:

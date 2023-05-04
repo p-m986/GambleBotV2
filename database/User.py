@@ -1,14 +1,11 @@
-import asyncio
-import json
-from Connection import client
-
-from config import __add_path
-asyncio.run(__add_path())
-
 from Logs import logevents
+from database.Connection import database
+
+import asyncio
 
 # Methods that belong to this class
-# __find_username               Working
+# 
+# __find_username               Done        ErrHandling: Done
 # __get_user_count              Done        ErrHandling: Done
 # __create_user                 Done        ErrHandling: Not Required
 # __add_user                    Done        ErrHandling: Done
@@ -22,18 +19,19 @@ from Logs import logevents
 # __unban_user                  Done        ErrHandling: Done
 
 
+Connection = database()
+
 # Data to be fed into this class is to be validated before hand
 # as no error handeling has been done for invalid data
 class User():
-    # Setting up the collection to be used Client is common for all objects 
-    database = 'UserData'
-    collection = 'User'
-    client = client[database][collection]
     
     # Setting up the logger class for logging errors
     logger = logevents()
+    client = None
 
     def __init__(self):
+        # self.client_task = asyncio.create_task(Connection.get_client())
+
         # Creating a default user object
         self.userid = None
         self.discord_username = None
@@ -44,6 +42,13 @@ class User():
         self.verified = False
         self.banned = False
 
+
+    async def set_client(self):
+        # Setting up the collection to be used Client is common for all objects 
+        database = 'UserData'
+        collection = 'User'
+        obj = await Connection.get_client()
+        self.client = obj[database][collection]
 
     # Method to get the total count of successfully registerd users
     async def __find_username(self, username: str) -> dict:
@@ -265,9 +270,3 @@ class User():
             errorid = self.logger.log_error(class_name='User', function_name='__unban_user', message=str(error))
             print(f'An error occoured in the Uer class wtihin the __unban_user function, check error logs with id {errorid} for more details')
             return False
-
-        
-
-if __name__ == '__main__':
-    obj = User()
-    print(asyncio.run(obj._User__get_user_count()))
