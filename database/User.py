@@ -1,5 +1,5 @@
-from Logs import logevents
 from database.Connection import database
+from Logs import logevents
 
 import asyncio
 
@@ -42,19 +42,34 @@ class User():
         self.verified = False
         self.banned = False
 
-
     async def set_client(self):
         # Setting up the collection to be used Client is common for all objects 
         database = 'UserData'
         collection = 'User'
         obj = await Connection.get_client()
         self.client = obj[database][collection]
+        print("Client setup is successful")
 
-    # Method to get the total count of successfully registerd users
+    
+
+    async def __find_user(self, id: int) -> dict:
+        try:
+            print("Finding User...")
+            return self.client.find_one({"discord_userid":id})
+        except Exception as error:
+            print("Error...")
+            errorid = await self.logger.log_error(class_name='User', function_name='__find_user', message=str(error))
+            print(
+                f"An error occoured in the User class within the __find_user function, check error logs with id {errorid} for more details")
+            return False
+    
+
     async def __find_username(self, username: str) -> dict:
         try:
+            print("Finding User...")
             return self.client.find_one({"game_usernames":username})
         except Exception as error:
+            print("Error...")
             errorid = await self.logger.log_error(class_name='User', function_name='__find_username', message=str(error))
             print(
                 f"An error occoured in the User class within the __find_username function, check error logs with id {errorid} for more details")
@@ -63,12 +78,12 @@ class User():
     # Method to get the total count of successfully registerd users
     async def __get_user_count(self) -> bool:
         try:
-            return ("Number of Toatl Users:\t" + str(self.client.count_documents({})))
+            return ((self.client.count_documents({})))
         except Exception as error:
             errorid = await self.logger.log_error(class_name='User', function_name='__get_user_count', message=str(error))
             print(
                 f"An error occoured in the User class within the __get_user_count function, check error logs with id {errorid} for more details")
-            return False
+            return 0
 
 
 # Create User
@@ -76,7 +91,7 @@ class User():
 
     async def __create_user(self, discord_username: str, discord_userid: int, game_username):
         # Filling in the data
-        self.userid = self.__get_user_count() + 1
+        # self.userid = await int(self.__get_user_count()) + 1
         self.discord_username = discord_username
         self.discord_userid = discord_userid
         self.default_username = game_username
@@ -183,7 +198,7 @@ class User():
                 raise Exception('This username dosent belong to the author')
         
             self.client.replace_one(query, user)
-            print("Default accoutn changed successfully")
+            print("Default account changed successfully")
             return True
         
         except Exception as error:
@@ -270,3 +285,8 @@ class User():
             errorid = self.logger.log_error(class_name='User', function_name='__unban_user', message=str(error))
             print(f'An error occoured in the Uer class wtihin the __unban_user function, check error logs with id {errorid} for more details')
             return False
+        
+   
+if __name__ == "__main__":
+    obj = User()
+    obj.set_client()
